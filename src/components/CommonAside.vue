@@ -1,6 +1,10 @@
 <template>
-  <el-aside :width=width>
-    <el-menu background-color="#545456" text-color="#fff" :collapse="isCollapse">
+  <el-aside :class="{ 'is-collapsed': isCollapsed }">
+    <el-menu
+      background-color="#545456"
+      text-color="#fff"
+      :collapse="isCollapse"
+    >
       <h3 v-show="!isCollapse">platform manager</h3>
       <h3 v-show="isCollapse">PM</h3>
       <el-menu-item
@@ -36,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { userAllDataStore } from "../stores";
 
 const list = ref([
@@ -87,11 +91,24 @@ const list = ref([
 const noChildren = computed(() => list.value.filter((item) => !item.children));
 const hasChildren = computed(() => list.value.filter((item) => item.children));
 const store = userAllDataStore();
-const isCollapse = computed(()=>store.$state.isCollapse);
-const width = computed(()=>store.$state.isCollapse ? '64px' :'180px');
+const isCollapse = computed(() => store.isCollapse);
+// const width = computed(() => (store.isCollapse ? "64px" : "180px"));
+const isCollapsed = computed(()=>(store.isCollapse ? true : false))
+onMounted(() => {
+  // watch(store, (newVal, oldVal) => {
+  //   document.documentElement.style.setProperty(
+  //     "--width-animation",
+  //     !newVal.isCollapse ? "growWidth 3s forwards" : "shinkwidth 3s forwards"
+  //   );
+  //   console.log(
+  //     newVal,
+  //     document.documentElement.style.getPropertyValue("--width-animation")
+  //   );
+  // });
+});
 </script>
 
-<style lang="less" scoped>
+<style lang="less" setup>
 .icons {
   width: 18px;
   height: 18px;
@@ -100,8 +117,6 @@ const width = computed(()=>store.$state.isCollapse ? '64px' :'180px');
 
 .el-menu {
   border-right: none;
-  
-  
   h3 {
     line-height: 48px;
     color: #fff;
@@ -111,6 +126,14 @@ const width = computed(()=>store.$state.isCollapse ? '64px' :'180px');
 .el-aside {
   height: 100vh;
   background-color: #545456;
-  
+  transition: width 1s ease; 
 }
+
+.is-collapsed {
+  width: 64px !important;
+}
+.el-aside:not(.is-collapsed) {
+  width: 180px;
+}
+
 </style>
