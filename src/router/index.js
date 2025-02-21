@@ -7,17 +7,17 @@ const routes = [
         component:()=>import('@/views/Main.vue'),
         redirect: 'home',
         children:[
-            {
-                path: "home",
-                name: "home",
-                component:()=>import('@/views/Home.vue'),
-            },
-            {
-                path: "user",
-                name: "user",
-                component:()=>import('@/views/User.vue'),
-            },
         ]
+    },
+    {
+        path: "/login",
+        name: "login",
+        component:()=>import('@/views/Login.vue'),
+    },
+    {
+        path: '/404',
+        name: '404',
+        componrnt:()=>import('@/views/404.vue'),
     }
 ]
 

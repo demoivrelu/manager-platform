@@ -1,32 +1,32 @@
 /**
  * API management
  */
-import request  from "./request";
+import request from "./request";
 
 // homepage left table data
-export default{
-    getTableData(){
+export default {
+    getTableData() {
         return request({
             url: '/home/getTable',
             method: "get",
             // mock: false,
         })
     },
-    getCountData(){
+    getCountData() {
         return request({
             url: '/home/getCountData',
             method: "get",
             // mock: false,
         })
     },
-    getChartData(){
+    getChartData() {
         return request({
             url: '/home/getChartData',
             method: "get",
             // mock: false,
         })
     },
-    getUserData(data){
+    getUserData(data) {
         return request({
             url: '/home/getUserData',
             method: "get",
@@ -34,11 +34,35 @@ export default{
             // mock: false,
         })
     },
-    deleteUser(data){
+    deleteUser(data) {
         return request({
             url: '/user/deleteUser',
             method: "delete",
             data,
+            // mock: false,
+        })
+    },
+    addUser(data) {
+        return request({
+            url: '/user/addUser',
+            method: "post",
+            data,
+            // mock: false,
+        })
+    },
+    updateUser(data) {
+        return request({
+            url: '/user/updateUser',
+            method: "post",
+            data,
+            // mock: false,
+        })
+    },
+    getMenu(params) {
+        return request({
+            url: '/permission/getMenu',
+            method: "post",
+            data: params
             // mock: false,
         })
     }

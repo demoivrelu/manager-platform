@@ -2,7 +2,6 @@
 import { ref, getCurrentInstance, onMounted, reactive } from "vue";
 import * as echarts from "echarts";
 import { da } from "element-plus/es/locales.mjs";
-// import axios from "axios";
 
 const { proxy } = getCurrentInstance();
 const getImageUrl = (user) => {
@@ -106,7 +105,7 @@ const pieOptions = reactive({
 const getTableData = async () => {
     const data = await proxy.$api.getTableData();
     // console.log(data);
-    tableData.value = data.tableData;
+    tableData.value = data.data.tableData;
 };
 const getCountData = async () => {
     const data = await proxy.$api.getCountData();
@@ -114,52 +113,56 @@ const getCountData = async () => {
     countData.value = data.countData;
 };
 const getChartData = async () => {
-    const { orderData, videoData, userData } = await proxy.$api.getChartData();
-    xOptions.xAxis.data = orderData.date;
-    xOptions.series = Object.keys(orderData.data[0]).map(val => {
-        return {
-            name: val,
-            data: orderData.data.map(item => item[val]),
-            type: 'line',
+    // const { orderData, videoData, userData } = await proxy.$api.getChartData().data;
+    await proxy.$api.getChartData().then(res =>{
+        console.log("logres @@@@", res)
+        const { orderData, videoData, userData } = res.data
+        xOptions.xAxis.data = orderData.date;
+        xOptions.series = Object.keys(orderData.data[0]).map(val => {
+            return {
+                name: val,
+                data: orderData.data.map(item => item[val]),
+                type: 'line',
+            }
+        })
+        const oneEchart = echarts.init(proxy.$refs['echart']);
+        oneEchart.setOption(xOptions);
+    
+        xOptions.xAxis.data = userData.map(item => item.date);
+        xOptions.series = [
+            {
+                name: 'new user',
+                data: userData.map(item => item.new),
+                type: 'bar',
+            },
+            {
+                name: 'active user',
+                data: userData.map(item => item.active),
+                type: 'bar',
+            },
+        ]
+        const twoEchart = echarts.init(proxy.$refs['userEchart']);
+        twoEchart.setOption(xOptions);
+    
+        pieOptions.series = [
+            {
+                data: videoData,
+                type: 'pie',
+            }
+        ];
+        const threeEchart = echarts.init(proxy.$refs['videoEchart']);
+        threeEchart.setOption(pieOptions);
+    
+        observer.value  = new ResizeObserver(() => {
+            oneEchart.resize();
+            twoEchart.resize();
+            threeEchart.resize();
+        });
+    
+        if (proxy.$refs['echart']) {
+            observer.value.observe(proxy.$refs['echart']);
         }
-    })
-    const oneEchart = echarts.init(proxy.$refs['echart']);
-    oneEchart.setOption(xOptions);
-
-    xOptions.xAxis.data = userData.map(item => item.date);
-    xOptions.series = [
-        {
-            name: 'new user',
-            data: userData.map(item => item.new),
-            type: 'bar',
-        },
-        {
-            name: 'active user',
-            data: userData.map(item => item.active),
-            type: 'bar',
-        },
-    ]
-    const twoEchart = echarts.init(proxy.$refs['userEchart']);
-    twoEchart.setOption(xOptions);
-
-    pieOptions.series = [
-        {
-            data: videoData,
-            type: 'pie',
-        }
-    ];
-    const threeEchart = echarts.init(proxy.$refs['videoEchart']);
-    threeEchart.setOption(pieOptions);
-
-    observer.value  = new ResizeObserver(() => {
-        oneEchart.resize();
-        twoEchart.resize();
-        threeEchart.resize();
     });
-
-    if (proxy.$refs['echart']) {
-        observer.value.observe(proxy.$refs['echart']);
-    }
 };
 onMounted(() => {
     getTableData();
@@ -170,7 +173,7 @@ onMounted(() => {
 
 <template>
     <el-row class="home" :gutter="20">
-        <el-col :span="8" style="margin-top: 20px">
+        <el-col :span="8" style="margin-top: 0px">
             <el-card shadow="hover" class="user-table">
                 <div class="user">
                     <img :src="getImageUrl('user')" />

@@ -23,7 +23,11 @@ service.interceptors.response.use(
     (res) => {
         const { code, data, msg } = res.data;
         if (code == 200) {
-            return data;
+            console.log(data, ";;;;")
+            // return { code, data, msg };
+            return new Promise((resolve) => {
+                resolve({code, data, msg})
+            });
         }
         else{
             ElMessage.error(msg || NETWORK_ERROR);

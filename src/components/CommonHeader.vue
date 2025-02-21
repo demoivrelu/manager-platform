@@ -16,7 +16,7 @@
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item>user center</el-dropdown-item>
-            <el-dropdown-item>quit</el-dropdown-item>
+            <el-dropdown-item @click="handleQuit">quit</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -28,16 +28,21 @@
 <script setup>
 import { ref, computed } from "vue";
 import { userAllDataStore } from "../stores";
-
+// import { userAllDataStore } from "../stores";
+import {useRouter} from 'vue-router'
 const getImageUrl = (user) => {
   return new URL(`../assets/images/${user}.png`, import.meta.url).href;
 }
 
 const store = userAllDataStore();
 const handleCollapse = ()=>{
-  store.$state.isCollapse = !store.$state.isCollapse
+  store.state.isCollapse = !store.state.isCollapse
 }
-
+const router = useRouter()
+const handleQuit = ()=>{
+  store.clean()
+  router.push('/login')
+}
 </script>
 
 <style lang="less" scoped>

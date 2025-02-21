@@ -41,11 +41,14 @@ for (let i = 0; i < count; i++) {
 export default {
     getUserData: (config) => {
         let getBody = JSON.parse(config.body);
+        console.log(getBody)
+        console.log("0000user:", List);
         const { name, page = 1, limit = 10 } = param2Obj(config.url);
         const mockList = List.filter((user) => {
             if (typeof(getBody.name) === 'string' && user.name.indexOf(getBody.name) === -1) return false;
             return true;
         });
+        console.log("---------------")
         const pageList = mockList.filter(
             (item, index) =>
                 index < limit * getBody.page && index >= limit * (getBody.page - 1)
@@ -55,7 +58,8 @@ export default {
             data: {
                 total: mockList.length,
                 items: pageList
-            }
+            },
+            msg:"OK"
         };
     },
 
@@ -74,5 +78,61 @@ export default {
             }
         }
     },
+
+    addUser: (config) => {
+        let getBody = JSON.parse(config.body);
+        console.log(getBody);
+        if (!getBody.name){
+            console.log('error');
+            return {
+                code:999,
+                message: "error params!"
+            }
+        } else {
+            List.unshift({
+                id: Mock.Random.guid(),
+                name: getBody.name,
+                age: parseInt(getBody.age),
+                birth: getBody.birth,
+                sex: parseInt(getBody.sex),
+                address: getBody.address,
+            })
+            console.log(List, "success");
+            return {
+                code: 200,
+                data:List,
+                message: "success"
+            }
+        }
+    },
+    updateUser: (config) => {
+        let getBody = JSON.parse(config.body);
+        console.log("getadit..", getBody)
+        if (!getBody.id){
+            return {
+                code:999,
+                msg: "error params!"
+            }
+        } else {
+            List.some((user) => {
+                if (user.id === getBody.id) {
+                    user.name = getBody.name;
+                    user.address = getBody.address;
+                    user.age = parseInt(getBody.age);
+                    user.sex = parseInt(getBody.sex);
+                    user.birth = getBody.birth;
+                    console.log(user, getBody)
+                }
+            })
+            console.log("after ... list", List)
+            return {
+                code: 200,
+                data: List,
+                msg: "success"
+            }
+
+            // return "OK"
+        }
+    }
 
 };

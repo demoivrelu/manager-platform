@@ -4,6 +4,7 @@
       background-color="#545456"
       text-color="#fff"
       :collapse="isCollapse"
+      :default-active="activeMenu"
     >
       <h3 v-show="!isCollapse">platform manager</h3>
       <h3 v-show="isCollapse">PM</h3>
@@ -11,6 +12,7 @@
         v-for="item in noChildren"
         :index="item.path"
         :key="item.path"
+        @click="handleMenu(item)"
       >
         <component class="icons" :is="item.icon"></component>
         <span>{{ item.label }}</span>
@@ -29,6 +31,7 @@
             v-for="subItem in item.children"
             :index="subItem.path"
             :key="subItem.path"
+            @click="handleMenu(subItem)"
           >
             <component class="icons" :is="subItem.icon"></component>
             <span>{{ subItem.label }}</span>
@@ -42,58 +45,67 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { userAllDataStore } from "../stores";
+import { useRoute, useRouter } from "vue-router";
 
-const list = ref([
-  {
-    path: "/home",
-    name: "home",
-    label: "首页",
-    icon: "house",
-    url: "Home",
-  },
-  {
-    path: "/mall",
-    name: "mall",
-    label: "商品管理",
-    icon: "video-play",
-    url: "Mall",
-  },
-  {
-    path: "/user",
-    name: "user",
-    label: "用户管理",
-    icon: "user",
-    url: "User",
-  },
-  {
-    path: "/other",
-    label: "其他",
-    icon: "location",
-    children: [
-      {
-        path: "/page1",
-        name: "page1",
-        label: "页面1",
-        icon: "setting",
-        url: "Page1",
-      },
-      {
-        path: "/page2",
-        name: "page2",
-        label: "页面2",
-        icon: "setting",
-        url: "Page2",
-      },
-    ],
-  },
-]);
+// const list = ref([
+//   {
+//     path: "/home",
+//     name: "home",
+//     label: "Home",
+//     icon: "house",
+//     url: "Home",
+//   },
+//   {
+//     path: "/mall",
+//     name: "mall",
+//     label: "Mall",
+//     icon: "video-play",
+//     url: "Mall",
+//   },
+//   {
+//     path: "/user",
+//     name: "user",
+//     label: "User",
+//     icon: "user",
+//     url: "User",
+//   },
+//   {
+//     path: "/other",
+//     label: "Other",
+//     icon: "location",
+//     children: [
+//       {
+//         path: "/page1",
+//         name: "page1",
+//         label: "Page1",
+//         icon: "setting",
+//         url: "Page1",
+//       },
+//       {
+//         path: "/page2",
+//         name: "page2",
+//         label: "Page2",
+//         icon: "setting",
+//         url: "Page2",
+//       },
+//     ],
+//   },
+// ]);
 
 const noChildren = computed(() => list.value.filter((item) => !item.children));
 const hasChildren = computed(() => list.value.filter((item) => item.children));
 const store = userAllDataStore();
-const isCollapse = computed(() => store.isCollapse);
-// const width = computed(() => (store.isCollapse ? "64px" : "180px"));
-const isCollapsed = computed(()=>(store.isCollapse ? true : false))
+const isCollapse = computed(() => store.state.isCollapse);
+const width = computed(() => (store.state.isCollapse ? "64px" : "180px"));
+const isCollapsed = computed(()=>(store.state.isCollapse ? true : false))
+const router = useRouter()
+const route = useRoute()
+const activeMenu = computed(()=>route.path)
+const list = computed(()=>store.state.menuList)
+const handleMenu = (item)=>{
+  router.push(item.path)
+  store.selectMenu(item)
+}
 onMounted(() => {
   // watch(store, (newVal, oldVal) => {
   //   document.documentElement.style.setProperty(
@@ -126,7 +138,7 @@ onMounted(() => {
 .el-aside {
   height: 100vh;
   background-color: #545456;
-  transition: width 1s ease; 
+  transition: width 0.6s ease; 
 }
 
 .is-collapsed {
