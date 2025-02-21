@@ -1,0 +1,1 @@
+import{_ as c,i as e,d as o}from"./index-BDo1a9mm.js";const a={},t={class:"commaon-layout"};function s(_,n){return o(),e("div",t," 404 ")}const d=c(a,[["render",s],["__scopeId","data-v-a0bf0ac7"]]);export{d as default};
